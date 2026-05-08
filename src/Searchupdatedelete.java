@@ -864,23 +864,55 @@ public class Searchupdatedelete extends JInternalFrame {
 	    }
 	    // ELIMINAR
 	    public void eliminarDatos() {
-	    	if (!verificarConexion()) return;
+	        if (!verificarConexion()) return;
+
+	        String cedula = txtcedula.getText();
+	        if (cedula == null || cedula.trim().isEmpty()) {
+	            JOptionPane.showMessageDialog(this, "Por favor, seleccione un registro para eliminar.");
+	            return;
+	        }
+
+	        int respuesta = JOptionPane.showConfirmDialog(this, 
+	            "¿Está seguro de que desea eliminar el registro con cédula " + cedula + "?\nEl registro se moverá al portapapeles.", 
+	            "Confirmar Eliminación", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+
+	        if (respuesta != JOptionPane.YES_OPTION) {
+	            return;
+	        }
+
 	        try {
+	            con.setAutoCommit(false);
 
-	            s = con.prepareStatement("DELETE FROM datos WHERE cedula=?");
+	            // 1. Mover a portapapeles
+	            String sqlMover = "INSERT INTO portapapeles (Prefijo, Tomo, Asiento, Cedula, Nombre1, Nombre2, Apellido1, Apellido2, ApellidoC, UAC, Genero, EstadoCivil, FechaNac, Provincia, Distrito, Corregimiento, Comunidad, Calle, Casa, Telefono, Correo) " +
+	                              "SELECT Prefijo, Tomo, Asiento, Cedula, Nombre1, Nombre2, Apellido1, Apellido2, ApellidoC, Uac, Genero, Estado_civil, Fecha_Nac, Provincia, Distrito, Corregimiento, Comunidad, Calle, Casa, Telefono, Correo " +
+	                              "FROM datos WHERE Cedula = ?";
+	            
+	            var psMover = con.prepareStatement(sqlMover);
+	            psMover.setString(1, cedula);
+	            psMover.executeUpdate();
 
-	            s.setString(1, txtcedula.getText());
+	            // 2. Eliminar de datos
+	            var psEliminar = con.prepareStatement("DELETE FROM datos WHERE Cedula = ?");
+	            psEliminar.setString(1, cedula);
+	            psEliminar.executeUpdate();
 
-	            s.executeUpdate();
+	            con.commit();
+	            con.setAutoCommit(true);
 
-	            JOptionPane.showMessageDialog(null, "Registro eliminado");
+	            JOptionPane.showMessageDialog(null, "Registro movido al portapapeles y eliminado con éxito.");
 
 	            cargardatos();
-
 	            limpiarCampos();
 
 	        } catch (Exception e) {
+	            try {
+	                if (con != null) con.rollback();
+	            } catch (Exception ex) {
+	                ex.printStackTrace();
+	            }
 	            e.printStackTrace();
+	            JOptionPane.showMessageDialog(this, "Error al procesar la eliminación: " + e.getMessage());
 	        }
 	    }
 
