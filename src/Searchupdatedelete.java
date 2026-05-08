@@ -1,4 +1,3 @@
-package soft3;
 
 import java.sql.SQLException;
 import java.sql.Connection;
@@ -37,7 +36,7 @@ import javax.swing.JComboBox;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Searchupdatedelete extends JPanel {
+public class Searchupdatedelete extends JInternalFrame {
 
 	  private static final long serialVersionUID = 1L;
 
@@ -71,7 +70,7 @@ public class Searchupdatedelete extends JPanel {
 	    public static JTable table;
 
 	    // BASE DE DATOS
-	    public static final String url = "jdbc:mysql://127.0.0.1:3307/personal?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
+	    public static final String url = "jdbc:mysql://127.0.0.1:3308/personal?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
 
 	    public static final String usuario = "d32026";
 	    public static final String contraseña = "123";
@@ -135,9 +134,14 @@ public class Searchupdatedelete extends JPanel {
 
 	    // CONSTRUCTOR
 	    public Searchupdatedelete() {
-	        setLayout(null);
+	        super("Edición / Búsqueda / Eliminación", true, true, true, true);
+	        setDefaultCloseOperation(JInternalFrame.DISPOSE_ON_CLOSE);
+	        getContentPane().setLayout(null);
 	        setPreferredSize(new Dimension(1200, 800));
-	        setBackground(SystemColor.activeCaption);
+	        getContentPane().setBackground(SystemColor.activeCaption);
+	        
+	        // Conexión automática
+	        conectarbase();
 	       
 	        
 	        
@@ -431,11 +435,9 @@ public class Searchupdatedelete extends JPanel {
 
 	    // CONECTAR
 	    public static void conectarbase() {
-	    	
 	        try {
 	            if (con == null || con.isClosed()) {
 	                con = DriverManager.getConnection(url, usuario, contraseña);
-	                System.out.println("Conexión establecida");
 	            }
 	        } catch (Exception e) {
 	            JOptionPane.showMessageDialog(null, "Error al conectar:\n" + e.getMessage());
@@ -916,4 +918,5 @@ public class Searchupdatedelete extends JPanel {
 	            e.printStackTrace();
 	            return false;
 	        }
-	    }	
+	    }
+	}

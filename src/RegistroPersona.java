@@ -1,4 +1,3 @@
-package Proyecto1;
 
 
 import java.awt.EventQueue;
@@ -12,7 +11,7 @@ import java.util.Map;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -20,8 +19,11 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import com.toedter.calendar.JDateChoose;
-public class RegistroPersona extends JFrame {
+import com.toedter.calendar.JDateChooser;
+import java.awt.Color;
+import java.text.SimpleDateFormat;
+import java.util.regex.Pattern;
+public class RegistroPersona extends JInternalFrame {
 
     private static final long serialVersionUID = 1L;
     private JPanel contentPane;
@@ -31,7 +33,7 @@ public class RegistroPersona extends JFrame {
     private JDateChooser dateChooser;
     private JComboBox<String> cbPrefijo, cbGenero, cbEstadoCivil, cbProvincia, cbDistrito, cbCorregimiento, cbUac;
 
-    private final String url = "jdbc:mysql://127.0.0.1:3307/personal?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
+    private final String url = "jdbc:mysql://127.0.0.1:3308/personal?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
     private final String usuario = "d32026";
     private final String contraseña = "123";
 
@@ -52,8 +54,8 @@ public class RegistroPersona extends JFrame {
     }
 
     public RegistroPersona() {
-        setTitle("Registro de Personas");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        super("Registro de Personas", true, true, true, true);
+        setDefaultCloseOperation(JInternalFrame.DISPOSE_ON_CLOSE);
         setBounds(100, 100, 1100, 650);
 
         contentPane = new JPanel();
@@ -65,6 +67,7 @@ public class RegistroPersona extends JFrame {
         inicializarDatosUbicacion();
         crearComponentes();
         cargarEventos();
+        conectar();
     }
 
     private void crearComponentes() {
@@ -295,12 +298,11 @@ public class RegistroPersona extends JFrame {
     private void conectar() {
         try {
             con = DriverManager.getConnection(url, usuario, contraseña);
-            JOptionPane.showMessageDialog(this, "Conectado correctamente");
 
             llenarProvinciasDesdeBD(); // ← IMPORTANTE
 
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error de conexión");
+            JOptionPane.showMessageDialog(this, "Error de conexión: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -327,10 +329,91 @@ public class RegistroPersona extends JFrame {
         }
     }
 
+    private boolean validarCampos() {
+        if (txtTomo.getText().trim().isEmpty()) {
+            mostrarError("El campo Tomo es obligatorio", txtTomo);
+            return false;
+        }
+        if (txtAsiento.getText().trim().isEmpty()) {
+            mostrarError("El campo Asiento es obligatorio", txtAsiento);
+            return false;
+        }
+        if (txtNombre1.getText().trim().isEmpty()) {
+            mostrarError("El campo Nombre 1 es obligatorio", txtNombre1);
+            return false;
+        }
+        if (txtApellido1.getText().trim().isEmpty()) {
+            mostrarError("El campo Apellido 1 es obligatorio", txtApellido1);
+            return false;
+        }
+        if (txtApellidoc.getText().trim().isEmpty()) {
+            mostrarError("El campo Apellido de Casada es obligatorio", txtApellidoc);
+            return false;
+        }
+        if (dateChooser.getDate() == null) {
+            JOptionPane.showMessageDialog(this, "La Fecha de Nacimiento es obligatoria");
+            dateChooser.requestFocus();
+            return false;
+        }
+        if (cbProvincia.getSelectedIndex() == -1) {
+            JOptionPane.showMessageDialog(this, "Debe seleccionar una Provincia");
+            cbProvincia.requestFocus();
+            return false;
+        }
+        if (cbDistrito.getSelectedIndex() == -1) {
+            JOptionPane.showMessageDialog(this, "Debe seleccionar un Distrito");
+            cbDistrito.requestFocus();
+            return false;
+        }
+        if (cbCorregimiento.getSelectedIndex() == -1) {
+            JOptionPane.showMessageDialog(this, "Debe seleccionar un Corregimiento");
+            cbCorregimiento.requestFocus();
+            return false;
+        }
+        if (txtComunidad.getText().trim().isEmpty()) {
+            mostrarError("El campo Comunidad es obligatorio", txtComunidad);
+            return false;
+        }
+        if (txtCalle.getText().trim().isEmpty()) {
+            mostrarError("El campo Calle es obligatorio", txtCalle);
+            return false;
+        }
+        if (txtCasa.getText().trim().isEmpty()) {
+            mostrarError("El campo Casa es obligatorio", txtCasa);
+            return false;
+        }
+        if (txtTelefono.getText().trim().length() < 9) {
+            mostrarError("El campo Teléfono debe tener el formato 0000-0000", txtTelefono);
+            return false;
+        }
+        if (!validarEmail(txtCorreo.getText().trim())) {
+            mostrarError("El formato del Correo electrónico no es válido", txtCorreo);
+            return false;
+        }
+        return true;
+    }
+
+    private void mostrarError(String mensaje, JTextField campo) {
+        JOptionPane.showMessageDialog(this, mensaje, "Error de validación", JOptionPane.WARNING_MESSAGE);
+        campo.requestFocus();
+        campo.selectAll();
+    }
+
+    private boolean validarEmail(String email) {
+        if (email.isEmpty()) return false;
+        String emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$";
+        Pattern pat = Pattern.compile(emailRegex);
+        return pat.matcher(email).matches();
+    }
+
     private void guardar() {
 
         if (con == null) {
             JOptionPane.showMessageDialog(this, "Primero debes conectar a la base de datos");
+            return;
+        }
+
+        if (!validarCampos()) {
             return;
         }
 
@@ -389,7 +472,7 @@ public class RegistroPersona extends JFrame {
         txtApellido2.setText("");
         txtApellidoc.setText("");
 
-        txtFechaNac.setText("");
+        dateChooser.setDate(null);
         txtComunidad.setText("");
         txtCalle.setText("");
         txtCasa.setText("");
