@@ -421,7 +421,7 @@ public class RegistroPersona extends JInternalFrame {
         	String sql = "INSERT INTO datos (" +
         		    "prefijo, tomo, asiento, cedula, nombre1, nombre2, apellido1, apellido2, apellidoc, uac, " +
         		    "genero, estado_civil, fecha_nac, provincia, distrito, corregimiento, comunidad, calle, casa, telefono, correo" +
-        		    ") VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";;
+        		    ") VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
             var ps = con.prepareStatement(sql);
 

@@ -2,9 +2,9 @@
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 
 public class Menuregistro extends JFrame {
+    private static final long serialVersionUID = 1L;
     private JDesktopPane desktPane;
     private RegistroPersona F1;
     private Searchupdatedelete F2;

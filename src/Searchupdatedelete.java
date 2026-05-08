@@ -234,7 +234,7 @@ public class Searchupdatedelete extends JInternalFrame {
 	        dateChooserFecha = new JDateChooser();
 	        dateChooserFecha.setBounds(410, 140, 120, 25);
 	        dateChooserFecha.setDateFormatString("yyyy-MM-dd");
-	        add(dateChooserFecha);;
+	        add(dateChooserFecha);
 	        
 	        cbProvincia = new JComboBox<>();
 	        cbProvincia.setBounds(540, 140, 120, 25);
@@ -324,33 +324,39 @@ public class Searchupdatedelete extends JInternalFrame {
 	                txtgenero.setText(model.getValueAt(fila, 10) != null ? model.getValueAt(fila, 10).toString() : "");
 	                cbEstadoCivil.setSelectedItem(model.getValueAt(fila, 11) != null ? model.getValueAt(fila, 11).toString() : "");
 	                try {
-	                    String fechaStr = model.getValueAt(fila, 12).toString();
-	                    if (fechaStr != null && !fechaStr.isEmpty()) {
-	                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-	                        Date fecha = sdf.parse(fechaStr);
-	                        dateChooserFecha.setDate(fecha);
+	                    Object valFecha = model.getValueAt(fila, 12);
+	                    if (valFecha != null) {
+	                        String fechaStr = valFecha.toString();
+	                        if (!fechaStr.isEmpty()) {
+	                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+	                            Date fecha = sdf.parse(fechaStr);
+	                            dateChooserFecha.setDate(fecha);
+	                        }
+	                    } else {
+	                        dateChooserFecha.setDate(null);
 	                    }
 	                } catch (Exception ex) {
 	                    dateChooserFecha.setDate(null);
 	                }
-	                String provincia =
-	                	    model.getValueAt(fila, 13).toString();
+	                Object valProv = model.getValueAt(fila, 13);
+	                if (valProv != null) {
+	                    String provincia = valProv.toString();
+	                    seleccionarCombo(cbProvincia, provincia);
+	                    cargarDistritos(provincia);
 
-	                	seleccionarCombo(cbProvincia, provincia);
+	                    Object valDist = model.getValueAt(fila, 14);
+	                    if (valDist != null) {
+	                        String distrito = valDist.toString();
+	                        seleccionarCombo(cbDistrito, distrito);
+	                        cargarCorregimientos(distrito);
 
-	                	cargarDistritos(provincia);
-
-	                	String distrito =
-	                	    model.getValueAt(fila, 14).toString();
-
-	                	seleccionarCombo(cbDistrito, distrito);
-
-	                	cargarCorregimientos(distrito);
-
-	                	String corregimiento =
-	                	    model.getValueAt(fila, 15).toString();
-
-	                	seleccionarCombo(cbCorregimiento, corregimiento);
+	                        Object valCorr = model.getValueAt(fila, 15);
+	                        if (valCorr != null) {
+	                            String corregimiento = valCorr.toString();
+	                            seleccionarCombo(cbCorregimiento, corregimiento);
+	                        }
+	                    }
+	                }
 	                txtcomunidad.setText(model.getValueAt(fila, 16) != null ? model.getValueAt(fila, 16).toString() : "");
 	                txtcalle.setText(model.getValueAt(fila, 17) != null ? model.getValueAt(fila, 17).toString() : "");
 	                txtcasa.setText(model.getValueAt(fila, 18) != null ? model.getValueAt(fila, 18).toString() : "");
