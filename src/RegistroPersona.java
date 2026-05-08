@@ -33,7 +33,7 @@ public class RegistroPersona extends JInternalFrame {
     private JDateChooser dateChooser;
     private JComboBox<String> cbPrefijo, cbGenero, cbEstadoCivil, cbProvincia, cbDistrito, cbCorregimiento, cbUac;
 
-    private final String url = "jdbc:mysql://127.0.0.1:3308/personal?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
+    private final String url = "jdbc:mysql://127.0.0.1:3308/personal?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8";
     private final String usuario = "d32026";
     private final String contraseña = "123";
 

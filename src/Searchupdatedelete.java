@@ -70,7 +70,7 @@ public class Searchupdatedelete extends JInternalFrame {
 	    public static JTable table;
 
 	    // BASE DE DATOS
-	    public static final String url = "jdbc:mysql://127.0.0.1:3308/personal?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
+	    public static final String url = "jdbc:mysql://127.0.0.1:3308/personal?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8";
 
 	    public static final String usuario = "d32026";
 	    public static final String contraseña = "123";
